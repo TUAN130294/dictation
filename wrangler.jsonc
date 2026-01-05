@@ -8,9 +8,8 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  // Environment variables - set these in Cloudflare dashboard
-  // "vars": {
-  //   "NEXT_PUBLIC_SUPABASE_URL": "your-supabase-url",
-  //   "NEXT_PUBLIC_SUPABASE_ANON_KEY": "your-anon-key"
-  // }
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://becwlnilsbksadfmasfc.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlY3dsbmlsc2Jrc2FkZm1hc2ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDQ0ODcsImV4cCI6MjA4MzE4MDQ4N30.HvJp_sDh2xaHEVa-hOQuUSS5y6jjPPyVTAgU41VniCA"
+  }
 }
