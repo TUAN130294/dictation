@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dictation Practice - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deep-blue': '#1A56DB',
+            'soft-blue': '#3B82F6',
+            'ocean-tint': '#EFF6FF',
+            'success-green': '#10B981',
+            'warning-amber': '#F59E0B',
+            'error-red': '#EF4444',
+            'focus-purple': '#8B5CF6',
+            'text-primary': '#111827',
+            'text-secondary': '#6B7280',
+            'border': '#E5E7EB',
+            'background': '#F9FAFB',
+            'surface': '#FFFFFF',
+            /* Contribution graph colors */
+            'contrib-0': '#E5E7EB',
+            'contrib-1': '#BBF7D0',
+            'contrib-2': '#86EFAC',
+            'contrib-3': '#4ADE80',
+            'contrib-4': '#22C55E',
+          },
+          fontFamily: {
+            'display': ['Inter', 'system-ui', 'sans-serif'],
+            'body': ['Source Sans 3', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    .btn-hover:hover {
+      filter: brightness(0.95);
+      transform: scale(0.98);
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .transition-all {
+      transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Badge grayscale for locked */
+    .badge-locked {
+      filter: grayscale(100%);
+      opacity: 0.5;
+    }
+    /* Contribution cell tooltip */
+    .contrib-cell:hover {
+      transform: scale(1.2);
+      z-index: 10;
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-text-primary min-h-screen">
+
+  <!-- Navigation -->
+  <nav class="bg-surface border-b border-border sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <svg class="w-8 h-8 text-deep-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+        </svg>
+        <span class="font-display font-bold text-xl">Dictation</span>
+      </a>
+      <div class="hidden md:flex items-center gap-6">
+        <a href="index.html" class="text-text-secondary hover:text-text-primary transition-all">Home</a>
+        <a href="dictation.html" class="text-text-secondary hover:text-text-primary transition-all">Practice</a>
+        <a href="dashboard.html" class="text-deep-blue font-medium">Dashboard</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Streak indicator -->
+        <div class="flex items-center gap-1 px-3 py-1.5 bg-ocean-tint rounded-full">
+          <svg class="w-5 h-5 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+          </svg>
+          <span class="font-display font-semibold text-warning-amber">13</span>
+        </div>
+        <!-- Mobile menu button -->
+        <button class="md:hidden p-2 rounded-lg hover:bg-ocean-tint transition-all">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-6 md:py-10 pb-24 md:pb-10">
+    <div class="max-w-6xl mx-auto px-4">
+
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="font-display font-bold text-2xl md:text-3xl mb-2">Your Progress</h1>
+        <p class="text-text-secondary">Track your listening practice journey</p>
+      </div>
+
+      <!-- Stats Overview -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <!-- Total XP -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="text-sm text-text-secondary">Total XP</span>
+          </div>
+          <span class="font-display font-bold text-2xl md:text-3xl">2,450</span>
+        </div>
+
+        <!-- Exercises Completed -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-sm text-text-secondary">Completed</span>
+          </div>
+          <span class="font-display font-bold text-2xl md:text-3xl">127</span>
+        </div>
+
+        <!-- Avg. Accuracy -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-soft-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <span class="text-sm text-text-secondary">Avg. Accuracy</span>
+          </div>
+          <span class="font-display font-bold text-2xl md:text-3xl">84%</span>
+        </div>
+
+        <!-- Practice Time -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-focus-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-sm text-text-secondary">Total Time</span>
+          </div>
+          <span class="font-display font-bold text-2xl md:text-3xl">18h</span>
+        </div>
+      </div>
+
+      <!-- Streak & Contribution Heatmap -->
+      <div class="grid md:grid-cols-3 gap-6 mb-8">
+
+        <!-- Current Streak Card -->
+        <div class="bg-gradient-to-br from-warning-amber/20 to-warning-amber/5 rounded-2xl p-6 border border-warning-amber/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-14 h-14 rounded-full bg-warning-amber/30 flex items-center justify-center">
+              <svg class="w-8 h-8 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-text-secondary">Current Streak</p>
+              <p class="font-display font-bold text-4xl text-warning-amber">13</p>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-text-secondary">Personal best</span>
+              <span class="font-semibold">28 days</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-text-secondary">Longest streak date</span>
+              <span class="font-semibold">Dec 2025</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contribution Heatmap -->
+        <div class="md:col-span-2 bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-display font-semibold text-lg">Activity</h2>
+            <div class="flex items-center gap-1 text-xs text-text-secondary">
+              <span>Less</span>
+              <div class="w-3 h-3 rounded-sm bg-contrib-0"></div>
+              <div class="w-3 h-3 rounded-sm bg-contrib-1"></div>
+              <div class="w-3 h-3 rounded-sm bg-contrib-2"></div>
+              <div class="w-3 h-3 rounded-sm bg-contrib-3"></div>
+              <div class="w-3 h-3 rounded-sm bg-contrib-4"></div>
+              <span>More</span>
+            </div>
+          </div>
+
+          <!-- Month labels -->
+          <div class="flex gap-1 mb-2 text-xs text-text-secondary pl-8">
+            <span class="w-12">Jul</span>
+            <span class="w-12">Aug</span>
+            <span class="w-12">Sep</span>
+            <span class="w-12">Oct</span>
+            <span class="w-12">Nov</span>
+            <span class="w-12">Dec</span>
+            <span class="w-12">Jan</span>
+          </div>
+
+          <!-- Grid (simplified 7 rows x 30 cols) -->
+          <div class="flex gap-1">
+            <!-- Day labels -->
+            <div class="flex flex-col gap-1 text-xs text-text-secondary pr-2">
+              <span class="h-3"></span>
+              <span class="h-3">Mon</span>
+              <span class="h-3"></span>
+              <span class="h-3">Wed</span>
+              <span class="h-3"></span>
+              <span class="h-3">Fri</span>
+              <span class="h-3"></span>
+            </div>
+
+            <!-- Contribution cells -->
+            <div class="flex-1 overflow-x-auto">
+              <div class="grid grid-rows-7 grid-flow-col gap-1" style="grid-template-rows: repeat(7, 12px);">
+                <!-- Week 1 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer" title="No activity"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer" title="2 exercises"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer" title="No activity"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer" title="4 exercises"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer" title="1 exercise"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer" title="No activity"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer" title="No activity"></div>
+
+                <!-- Week 2 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 3 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 4 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-4 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 5 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 6 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 7 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-4 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 8 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-4 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 9 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 10 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 11 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-4 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 12 -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-1 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+
+                <!-- Week 13 (current) -->
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-4 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-3 contrib-cell transition-all cursor-pointer"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-2 contrib-cell transition-all cursor-pointer ring-2 ring-deep-blue" title="Today - 4 exercises"></div>
+                <div class="w-3 h-3 rounded-sm bg-contrib-0 contrib-cell transition-all cursor-pointer"></div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-sm text-text-secondary mt-4">127 exercises in the last 6 months</p>
+        </div>
+      </div>
+
+      <!-- CEFR Level Progress -->
+      <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border mb-8">
+        <h2 class="font-display font-semibold text-lg mb-6">CEFR Level Progress</h2>
+
+        <div class="space-y-6">
+          <!-- A1 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-success-green/20 flex items-center justify-center font-display font-bold text-sm text-success-green">A1</span>
+                <span class="font-medium">Beginner</span>
+              </div>
+              <span class="text-sm text-text-secondary">20/20 completed</span>
+            </div>
+            <div class="h-3 bg-border rounded-full overflow-hidden">
+              <div class="h-full bg-success-green rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- A2 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-success-green/30 flex items-center justify-center font-display font-bold text-sm text-success-green">A2</span>
+                <span class="font-medium">Elementary</span>
+              </div>
+              <span class="text-sm text-text-secondary">18/25 completed</span>
+            </div>
+            <div class="h-3 bg-border rounded-full overflow-hidden">
+              <div class="h-full bg-success-green rounded-full" style="width: 72%"></div>
+            </div>
+          </div>
+
+          <!-- B1 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-soft-blue/20 flex items-center justify-center font-display font-bold text-sm text-soft-blue">B1</span>
+                <span class="font-medium">Intermediate</span>
+                <span class="px-2 py-0.5 bg-deep-blue/10 text-deep-blue text-xs font-medium rounded-full">Current</span>
+              </div>
+              <span class="text-sm text-text-secondary">12/30 completed</span>
+            </div>
+            <div class="h-3 bg-border rounded-full overflow-hidden">
+              <div class="h-full bg-soft-blue rounded-full" style="width: 40%"></div>
+            </div>
+          </div>
+
+          <!-- B2 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-soft-blue/10 flex items-center justify-center font-display font-bold text-sm text-soft-blue/50">B2</span>
+                <span class="font-medium text-text-secondary">Upper-Intermediate</span>
+              </div>
+              <span class="text-sm text-text-secondary">0/35 completed</span>
+            </div>
+            <div class="h-3 bg-border rounded-full overflow-hidden">
+              <div class="h-full bg-soft-blue/30 rounded-full" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- C1 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-focus-purple/10 flex items-center justify-center font-display font-bold text-sm text-focus-purple/50">C1</span>
+                <span class="font-medium text-text-secondary">Advanced</span>
+                <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+              <span class="text-sm text-text-secondary">Locked</span>
+            </div>
+            <div class="h-3 bg-border rounded-full overflow-hidden">
+              <div class="h-full bg-focus-purple/20 rounded-full" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- C2 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-focus-purple/10 flex items-center justify-center font-display font-bold text-sm text-focus-purple/50">C2</span>
+                <span class="font-medium text-text-secondary">Mastery</span>
+                <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+              <span class="text-sm text-text-secondary">Locked</span>
+            </div>
+            <div class="h-3 bg-border rounded-full overflow-hidden">
+              <div class="h-full bg-focus-purple/20 rounded-full" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievement Badges -->
+      <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border mb-8">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="font-display font-semibold text-lg">Achievements</h2>
+          <span class="text-sm text-text-secondary">8 of 24 unlocked</span>
+        </div>
+
+        <div class="grid grid-cols-4 md:grid-cols-8 gap-4">
+          <!-- Unlocked badges -->
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-success-green/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-success-green" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">First Win</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-warning-amber/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">7-Day Streak</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-soft-blue/20 flex items-center justify-center">
+              <span class="font-display font-bold text-soft-blue">A1</span>
+            </div>
+            <p class="text-xs font-medium">A1 Master</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-focus-purple/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-focus-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">Perfect Score</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-deep-blue/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-deep-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">Speed Demon</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-success-green/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">10 Hours</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-warning-amber/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">1000 XP</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-success-green/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">100 Done</p>
+          </div>
+
+          <!-- Locked badges -->
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">30-Day</p>
+          </div>
+
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <span class="font-display font-bold">A2</span>
+            </div>
+            <p class="text-xs font-medium">A2 Master</p>
+          </div>
+
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <span class="font-display font-bold">B1</span>
+            </div>
+            <p class="text-xs font-medium">B1 Master</p>
+          </div>
+
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">5000 XP</p>
+          </div>
+
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">50 Hours</p>
+          </div>
+
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">500 Done</p>
+          </div>
+
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">100-Day</p>
+          </div>
+
+          <div class="text-center badge-locked">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-border flex items-center justify-center">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium">Legend</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Exercise History -->
+      <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border">
+        <h2 class="font-display font-semibold text-lg mb-6">Recent Exercises</h2>
+
+        <div class="space-y-4">
+          <!-- Exercise Item 1 -->
+          <div class="flex items-center justify-between p-4 bg-background rounded-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-success-green/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">The Coffee Shop Conversation</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-soft-blue/20 text-soft-blue rounded text-xs font-medium">B1</span>
+                  <span>Today, 2:30 PM</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-success-green">87%</span>
+              <p class="text-xs text-text-secondary">+25 XP</p>
+            </div>
+          </div>
+
+          <!-- Exercise Item 2 -->
+          <div class="flex items-center justify-between p-4 bg-background rounded-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-warning-amber/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-warning-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">Weather Forecast Report</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-soft-blue/30 text-soft-blue rounded text-xs font-medium">B2</span>
+                  <span>Today, 1:15 PM</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-warning-amber">72%</span>
+              <p class="text-xs text-text-secondary">+15 XP</p>
+            </div>
+          </div>
+
+          <!-- Exercise Item 3 -->
+          <div class="flex items-center justify-between p-4 bg-background rounded-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-success-green/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">Booking a Hotel Room</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-soft-blue/20 text-soft-blue rounded text-xs font-medium">B1</span>
+                  <span>Yesterday, 4:45 PM</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-success-green">91%</span>
+              <p class="text-xs text-text-secondary">+30 XP</p>
+            </div>
+          </div>
+
+          <!-- Exercise Item 4 -->
+          <div class="flex items-center justify-between p-4 bg-background rounded-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-success-green/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">Introducing Yourself</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-success-green/20 text-success-green rounded text-xs font-medium">A2</span>
+                  <span>Yesterday, 3:20 PM</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-success-green">98%</span>
+              <p class="text-xs text-text-secondary">+35 XP</p>
+            </div>
+          </div>
+
+          <!-- Exercise Item 5 -->
+          <div class="flex items-center justify-between p-4 bg-background rounded-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-error-red/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-error-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">Business Presentation</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-soft-blue/30 text-soft-blue rounded text-xs font-medium">B2</span>
+                  <span>2 days ago</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-error-red">54%</span>
+              <p class="text-xs text-text-secondary">+5 XP</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full mt-4 py-3 text-soft-blue font-medium hover:text-deep-blue transition-all flex items-center justify-center gap-2">
+          View all history
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border py-2 px-4">
+    <div class="flex items-center justify-around">
+      <a href="index.html" class="flex flex-col items-center gap-1 p-2 text-text-secondary">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        <span class="text-xs">Home</span>
+      </a>
+      <a href="dictation.html" class="flex flex-col items-center gap-1 p-2 text-text-secondary">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+        </svg>
+        <span class="text-xs">Practice</span>
+      </a>
+      <a href="dashboard.html" class="flex flex-col items-center gap-1 p-2 text-deep-blue">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        <span class="text-xs font-medium">Progress</span>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dictation Practice - Results</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deep-blue': '#1A56DB',
+            'soft-blue': '#3B82F6',
+            'ocean-tint': '#EFF6FF',
+            'success-green': '#10B981',
+            'warning-amber': '#F59E0B',
+            'error-red': '#EF4444',
+            'focus-purple': '#8B5CF6',
+            'text-primary': '#111827',
+            'text-secondary': '#6B7280',
+            'border': '#E5E7EB',
+            'background': '#F9FAFB',
+            'surface': '#FFFFFF',
+          },
+          fontFamily: {
+            'display': ['Inter', 'system-ui', 'sans-serif'],
+            'body': ['Source Sans 3', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    .btn-hover:hover {
+      filter: brightness(0.95);
+      transform: scale(0.98);
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .transition-all {
+      transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Score circle animation */
+    .score-ring {
+      stroke-dasharray: 283;
+      stroke-dashoffset: calc(283 - (283 * 87) / 100);
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+    /* Streak pulse animation */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .streak-pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+    /* Text diff highlighting */
+    .diff-correct {
+      background-color: #D1FAE5;
+      color: #065F46;
+    }
+    .diff-error {
+      background-color: #FEE2E2;
+      color: #991B1B;
+      text-decoration: line-through;
+    }
+    .diff-missing {
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-text-primary min-h-screen">
+
+  <!-- Navigation -->
+  <nav class="bg-surface border-b border-border sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <svg class="w-8 h-8 text-deep-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+        </svg>
+        <span class="font-display font-bold text-xl hidden sm:inline">Dictation</span>
+      </a>
+      <a href="dashboard.html" class="text-soft-blue font-medium hover:text-deep-blue transition-all flex items-center gap-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <main class="py-6 md:py-10 pb-24 md:pb-10">
+    <div class="max-w-4xl mx-auto px-4">
+
+      <!-- Success Header -->
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-success-green/20 flex items-center justify-center">
+          <svg class="w-10 h-10 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h1 class="font-display font-bold text-2xl md:text-3xl mb-2">Great Job!</h1>
+        <p class="text-text-secondary">You completed "The Coffee Shop Conversation"</p>
+      </div>
+
+      <!-- Score Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <!-- Accuracy Score -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border text-center col-span-2 md:col-span-1">
+          <div class="relative w-20 h-20 mx-auto mb-3">
+            <svg class="w-20 h-20" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#10B981" stroke-width="8" class="score-ring"/>
+            </svg>
+            <span class="absolute inset-0 flex items-center justify-center font-display font-bold text-2xl text-success-green">87%</span>
+          </div>
+          <p class="text-sm text-text-secondary font-medium">Accuracy</p>
+        </div>
+
+        <!-- WER -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border text-center">
+          <span class="font-display font-bold text-3xl text-text-primary">13%</span>
+          <p class="text-sm text-text-secondary font-medium mt-2">Word Error Rate</p>
+        </div>
+
+        <!-- XP Earned -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border text-center">
+          <div class="flex items-center justify-center gap-1">
+            <svg class="w-6 h-6 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="font-display font-bold text-3xl text-warning-amber">+25</span>
+          </div>
+          <p class="text-sm text-text-secondary font-medium mt-2">XP Earned</p>
+        </div>
+
+        <!-- Time -->
+        <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border text-center">
+          <span class="font-display font-bold text-3xl text-text-primary">3:45</span>
+          <p class="text-sm text-text-secondary font-medium mt-2">Time Spent</p>
+        </div>
+      </div>
+
+      <!-- Streak Update -->
+      <div class="bg-gradient-to-r from-warning-amber/20 to-success-green/20 rounded-2xl p-6 mb-8 border border-warning-amber/30">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-full bg-warning-amber/30 flex items-center justify-center streak-pulse">
+              <svg class="w-9 h-9 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-text-secondary">Streak extended!</p>
+              <p class="font-display font-bold text-3xl text-warning-amber">13 days</p>
+            </div>
+          </div>
+          <div class="text-right hidden sm:block">
+            <p class="text-sm text-text-secondary">Personal best</p>
+            <p class="font-display font-semibold text-xl">28 days</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Section -->
+      <div class="bg-surface rounded-2xl p-4 md:p-6 shadow-sm border border-border mb-8">
+        <h2 class="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-soft-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+          Transcript Comparison
+        </h2>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap gap-4 mb-4 text-sm">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded bg-success-green/30"></span>
+            <span class="text-text-secondary">Correct</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded bg-error-red/30"></span>
+            <span class="text-text-secondary">Error</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded bg-warning-amber/30"></span>
+            <span class="text-text-secondary">Missing</span>
+          </div>
+        </div>
+
+        <!-- Your Answer -->
+        <div class="mb-4">
+          <p class="text-sm text-text-secondary mb-2 font-medium">Your answer:</p>
+          <div class="p-4 bg-background rounded-xl font-mono text-base leading-relaxed">
+            <span class="diff-correct px-1 rounded">Good</span>
+            <span class="diff-correct px-1 rounded">morning.</span>
+            <span class="diff-correct px-1 rounded">I</span>
+            <span class="diff-correct px-1 rounded">would</span>
+            <span class="diff-correct px-1 rounded">like</span>
+            <span class="diff-correct px-1 rounded">a</span>
+            <span class="diff-correct px-1 rounded">large</span>
+            <span class="diff-error px-1 rounded">coffe</span>
+            <span class="diff-correct px-1 rounded">with</span>
+            <span class="diff-correct px-1 rounded">milk,</span>
+            <span class="diff-correct px-1 rounded">please.</span>
+            <span class="diff-correct px-1 rounded">Can</span>
+            <span class="diff-correct px-1 rounded">I</span>
+            <span class="diff-error px-1 rounded">get</span>
+            <span class="diff-missing px-1 rounded">[also]</span>
+            <span class="diff-correct px-1 rounded">a</span>
+            <span class="diff-error px-1 rounded">croisant?</span>
+          </div>
+        </div>
+
+        <!-- Correct Answer -->
+        <div>
+          <p class="text-sm text-text-secondary mb-2 font-medium">Correct transcript:</p>
+          <div class="p-4 bg-ocean-tint rounded-xl font-mono text-base leading-relaxed">
+            Good morning. I would like a large <span class="font-semibold text-success-green">coffee</span> with milk, please. Can I <span class="font-semibold text-warning-amber">also</span> get a <span class="font-semibold text-success-green">croissant</span>?
+          </div>
+        </div>
+
+        <!-- Error Summary -->
+        <div class="mt-4 p-4 bg-background rounded-xl">
+          <p class="text-sm font-medium mb-2">Errors found:</p>
+          <ul class="text-sm text-text-secondary space-y-1">
+            <li class="flex items-start gap-2">
+              <span class="text-error-red">x</span>
+              <span><span class="font-mono text-error-red line-through">coffe</span> should be <span class="font-mono text-success-green">coffee</span> (spelling)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-warning-amber">-</span>
+              <span>Missing word: <span class="font-mono text-warning-amber">also</span></span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-error-red">x</span>
+              <span><span class="font-mono text-error-red line-through">croisant</span> should be <span class="font-mono text-success-green">croissant</span> (spelling)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Replay Audio -->
+      <div class="bg-surface rounded-2xl p-4 shadow-sm border border-border mb-8">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <button class="w-12 h-12 rounded-full bg-deep-blue text-white flex items-center justify-center btn-hover transition-all">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </button>
+            <div>
+              <p class="font-medium">Replay audio</p>
+              <p class="text-sm text-text-secondary">Listen again to review</p>
+            </div>
+          </div>
+          <span class="text-sm text-text-secondary">2:30</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="dictation.html" class="flex-1 bg-deep-blue text-white font-display font-semibold py-4 px-6 rounded-xl btn-hover transition-all flex items-center justify-center gap-2 min-h-[48px]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+          </svg>
+          Next Exercise
+        </a>
+        <a href="dictation.html" class="sm:w-auto bg-surface text-text-secondary font-display font-medium py-4 px-6 rounded-xl border-2 border-border hover:border-deep-blue hover:text-deep-blue transition-all flex items-center justify-center gap-2 min-h-[48px]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Retry
+        </a>
+        <a href="index.html" class="sm:w-auto bg-surface text-text-secondary font-display font-medium py-4 px-6 rounded-xl border-2 border-border hover:border-deep-blue hover:text-deep-blue transition-all flex items-center justify-center gap-2 min-h-[48px]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          Home
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border py-2 px-4">
+    <div class="flex items-center justify-around">
+      <a href="index.html" class="flex flex-col items-center gap-1 p-2 text-text-secondary">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        <span class="text-xs">Home</span>
+      </a>
+      <a href="dictation.html" class="flex flex-col items-center gap-1 p-2 text-text-secondary">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+        </svg>
+        <span class="text-xs">Practice</span>
+      </a>
+      <a href="dashboard.html" class="flex flex-col items-center gap-1 p-2 text-deep-blue">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        <span class="text-xs font-medium">Progress</span>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dictation Practice - Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deep-blue': '#1A56DB',
+            'soft-blue': '#3B82F6',
+            'ocean-tint': '#EFF6FF',
+            'success-green': '#10B981',
+            'warning-amber': '#F59E0B',
+            'error-red': '#EF4444',
+            'focus-purple': '#8B5CF6',
+            'text-primary': '#111827',
+            'text-secondary': '#6B7280',
+            'border': '#E5E7EB',
+            'background': '#F9FAFB',
+            'surface': '#FFFFFF',
+          },
+          fontFamily: {
+            'display': ['Inter', 'system-ui', 'sans-serif'],
+            'body': ['Source Sans 3', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom hover animations */
+    .btn-hover:hover {
+      filter: brightness(0.95);
+      transform: scale(0.98);
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .transition-all {
+      transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-text-primary min-h-screen">
+
+  <!-- Navigation -->
+  <nav class="bg-surface border-b border-border sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <svg class="w-8 h-8 text-deep-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+        </svg>
+        <span class="font-display font-bold text-xl">Dictation</span>
+      </a>
+      <div class="hidden md:flex items-center gap-6">
+        <a href="dashboard.html" class="text-text-secondary hover:text-text-primary transition-all">Dashboard</a>
+        <a href="dictation.html" class="text-text-secondary hover:text-text-primary transition-all">Practice</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Streak indicator -->
+        <div class="flex items-center gap-1 px-3 py-1.5 bg-ocean-tint rounded-full">
+          <svg class="w-5 h-5 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            <path d="M13.5 3C9.36 3 6 6.36 6 10.5c0 2.82 1.56 5.28 3.86 6.56.14-.14.3-.27.47-.38A5.5 5.5 0 0113.5 3z" transform="translate(-1, -1) scale(0.8)" fill="currentColor"/>
+          </svg>
+          <svg class="w-5 h-5 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+          </svg>
+          <span class="font-display font-semibold text-warning-amber">12</span>
+        </div>
+        <!-- Mobile menu button -->
+        <button class="md:hidden p-2 rounded-lg hover:bg-ocean-tint transition-all">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-b from-ocean-tint to-background py-12 md:py-20">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center max-w-2xl mx-auto">
+        <h1 class="font-display font-bold text-4xl md:text-5xl leading-tight mb-4">
+          Master English Listening Through
+          <span class="text-deep-blue"> Dictation Practice</span>
+        </h1>
+        <p class="text-text-secondary text-lg md:text-xl mb-8 leading-relaxed">
+          Train your ear with CEFR-leveled exercises. Type what you hear, track your progress, and build lasting listening skills.
+        </p>
+        <a href="dictation.html" class="inline-flex items-center gap-2 bg-deep-blue text-white font-display font-semibold px-8 py-4 rounded-lg btn-hover transition-all min-h-[44px]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Start Practicing
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CEFR Level Selector -->
+  <section class="py-12 md:py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="font-display font-semibold text-2xl md:text-3xl text-center mb-2">Choose Your Level</h2>
+      <p class="text-text-secondary text-center mb-8">Select a CEFR level that matches your current proficiency</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <!-- A1 -->
+        <a href="dictation.html?level=a1" class="bg-surface rounded-xl p-4 border-2 border-border card-hover transition-all cursor-pointer text-center">
+          <div class="w-12 h-12 rounded-full bg-success-green/20 flex items-center justify-center mx-auto mb-3">
+            <span class="font-display font-bold text-success-green">A1</span>
+          </div>
+          <span class="font-display font-medium text-sm">Beginner</span>
+          <p class="text-text-secondary text-xs mt-1">Basic phrases</p>
+        </a>
+
+        <!-- A2 -->
+        <a href="dictation.html?level=a2" class="bg-surface rounded-xl p-4 border-2 border-border card-hover transition-all cursor-pointer text-center">
+          <div class="w-12 h-12 rounded-full bg-success-green/30 flex items-center justify-center mx-auto mb-3">
+            <span class="font-display font-bold text-success-green">A2</span>
+          </div>
+          <span class="font-display font-medium text-sm">Elementary</span>
+          <p class="text-text-secondary text-xs mt-1">Simple conversations</p>
+        </a>
+
+        <!-- B1 -->
+        <a href="dictation.html?level=b1" class="bg-surface rounded-xl p-4 border-2 border-deep-blue card-hover transition-all cursor-pointer text-center">
+          <div class="w-12 h-12 rounded-full bg-soft-blue/20 flex items-center justify-center mx-auto mb-3">
+            <span class="font-display font-bold text-soft-blue">B1</span>
+          </div>
+          <span class="font-display font-medium text-sm">Intermediate</span>
+          <p class="text-text-secondary text-xs mt-1">Everyday topics</p>
+        </a>
+
+        <!-- B2 -->
+        <a href="dictation.html?level=b2" class="bg-surface rounded-xl p-4 border-2 border-border card-hover transition-all cursor-pointer text-center">
+          <div class="w-12 h-12 rounded-full bg-soft-blue/30 flex items-center justify-center mx-auto mb-3">
+            <span class="font-display font-bold text-soft-blue">B2</span>
+          </div>
+          <span class="font-display font-medium text-sm">Upper-Int</span>
+          <p class="text-text-secondary text-xs mt-1">Complex discussions</p>
+        </a>
+
+        <!-- C1 -->
+        <a href="dictation.html?level=c1" class="bg-surface rounded-xl p-4 border-2 border-border card-hover transition-all cursor-pointer text-center">
+          <div class="w-12 h-12 rounded-full bg-focus-purple/20 flex items-center justify-center mx-auto mb-3">
+            <span class="font-display font-bold text-focus-purple">C1</span>
+          </div>
+          <span class="font-display font-medium text-sm">Advanced</span>
+          <p class="text-text-secondary text-xs mt-1">Nuanced language</p>
+        </a>
+
+        <!-- C2 -->
+        <a href="dictation.html?level=c2" class="bg-surface rounded-xl p-4 border-2 border-border card-hover transition-all cursor-pointer text-center">
+          <div class="w-12 h-12 rounded-full bg-focus-purple/30 flex items-center justify-center mx-auto mb-3">
+            <span class="font-display font-bold text-focus-purple">C2</span>
+          </div>
+          <span class="font-display font-medium text-sm">Mastery</span>
+          <p class="text-text-secondary text-xs mt-1">Near-native</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Today's Progress / Streak Section -->
+  <section class="py-12 bg-surface border-y border-border">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid md:grid-cols-2 gap-8">
+
+        <!-- Streak Counter -->
+        <div class="bg-ocean-tint rounded-2xl p-6 md:p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <svg class="w-8 h-8 text-warning-amber" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 23c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-21C8.86 2 6 5.58 6 10c0 2.17.89 4.13 2.33 5.57l.17.17c.73.73 1.17 1.54 1.38 2.26H14.12c.21-.72.65-1.53 1.38-2.26l.17-.17C17.11 14.13 18 12.17 18 10c0-4.42-2.86-8-6-8z"/>
+            </svg>
+            <h3 class="font-display font-semibold text-xl">Current Streak</h3>
+          </div>
+          <div class="flex items-end gap-2 mb-2">
+            <span class="font-display font-bold text-6xl md:text-7xl text-warning-amber">12</span>
+            <span class="text-text-secondary text-lg pb-3">days</span>
+          </div>
+          <p class="text-text-secondary">You're on fire! Keep practicing daily to maintain your streak.</p>
+          <div class="mt-4 flex items-center gap-2 text-sm">
+            <span class="px-2 py-1 bg-success-green/20 text-success-green rounded-full font-medium">Personal best: 28 days</span>
+          </div>
+        </div>
+
+        <!-- Today's Stats -->
+        <div class="bg-gradient-to-br from-deep-blue to-soft-blue rounded-2xl p-6 md:p-8 text-white">
+          <h3 class="font-display font-semibold text-xl mb-4 opacity-90">Today's Progress</h3>
+          <div class="grid grid-cols-3 gap-4 mb-6">
+            <div>
+              <span class="font-display font-bold text-3xl">3</span>
+              <p class="text-sm opacity-75">Exercises</p>
+            </div>
+            <div>
+              <span class="font-display font-bold text-3xl">87%</span>
+              <p class="text-sm opacity-75">Avg. Accuracy</p>
+            </div>
+            <div>
+              <span class="font-display font-bold text-3xl">15</span>
+              <p class="text-sm opacity-75">Minutes</p>
+            </div>
+          </div>
+          <div class="bg-white/20 rounded-lg p-3">
+            <div class="flex justify-between text-sm mb-1">
+              <span>Daily goal</span>
+              <span>3/5 exercises</span>
+            </div>
+            <div class="h-2 bg-white/30 rounded-full overflow-hidden">
+              <div class="h-full bg-white rounded-full" style="width: 60%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Activity -->
+  <section class="py-12 md:py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="font-display font-semibold text-2xl">Recent Activity</h2>
+        <a href="dashboard.html" class="text-soft-blue font-medium hover:text-deep-blue transition-all flex items-center gap-1">
+          View all
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Activity Item 1 -->
+        <div class="bg-surface rounded-xl p-4 border border-border card-hover transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-success-green/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">The Coffee Shop Conversation</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-soft-blue/20 text-soft-blue rounded text-xs font-medium">B1</span>
+                  <span>2 min ago</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-success-green">92%</span>
+              <p class="text-xs text-text-secondary">+15 XP</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Item 2 -->
+        <div class="bg-surface rounded-xl p-4 border border-border card-hover transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-warning-amber/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-warning-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">Weather Forecast Report</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-soft-blue/30 text-soft-blue rounded text-xs font-medium">B2</span>
+                  <span>1 hour ago</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-warning-amber">76%</span>
+              <p class="text-xs text-text-secondary">+10 XP</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Item 3 -->
+        <div class="bg-surface rounded-xl p-4 border border-border card-hover transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-success-green/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-success-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium">Introducing Yourself</p>
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <span class="px-1.5 py-0.5 bg-success-green/20 text-success-green rounded text-xs font-medium">A2</span>
+                  <span>Yesterday</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-display font-semibold text-success-green">98%</span>
+              <p class="text-xs text-text-secondary">+20 XP</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start CTA -->
+  <section class="py-12 md:py-16 bg-deep-blue">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="font-display font-bold text-2xl md:text-3xl text-white mb-4">Ready to improve your listening?</h2>
+      <p class="text-white/80 mb-8 max-w-xl mx-auto">Start with a quick 2-minute exercise and see your progress instantly.</p>
+      <a href="dictation.html" class="inline-flex items-center gap-2 bg-white text-deep-blue font-display font-semibold px-8 py-4 rounded-lg btn-hover transition-all min-h-[44px]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        Quick Start
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-surface border-t border-border py-8">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <svg class="w-6 h-6 text-deep-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+          </svg>
+          <span class="font-display font-semibold">Dictation Practice</span>
+        </div>
+        <p class="text-text-secondary text-sm">Practice English listening daily. Build lasting skills.</p>
+        <div class="flex gap-4 text-text-secondary text-sm">
+          <a href="#" class="hover:text-text-primary transition-all">About</a>
+          <a href="#" class="hover:text-text-primary transition-all">Privacy</a>
+          <a href="#" class="hover:text-text-primary transition-all">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
